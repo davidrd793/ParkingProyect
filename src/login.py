@@ -124,6 +124,9 @@ class LoginInterface:
         password_entry = tk.Entry(self.root, show="*")
         password_entry.pack()
 
+        email_entry.bind("<Return>", lambda event: iniciar_sesion())
+        password_entry.bind("<Return>", lambda event: iniciar_sesion())
+        
         def iniciar_sesion():
             email = email_entry.get()
             contraseña = password_entry.get()
@@ -160,9 +163,12 @@ class LoginInterface:
         tk.Label(self.root, text="¿Tienes minusvalía?").pack()
         tk.Checkbutton(self.root, variable=minusvalia_var).pack()
         
-        #Autenticación de minusvalía
-        if minusvalia_var is True:
-            messagebox.showinfo("Pues agarrame el pepino") 
+        # Vincular tecla ENTER
+        nombre_entry.bind("<Return>", lambda event: registrar())
+        email_entry.bind("<Return>", lambda event: registrar())
+        password_entry.bind("<Return>", lambda event: registrar())
+        matricula_entry.bind("<Return>", lambda event: registrar())     
+          
         # Función para validar los datos
         def validar_datos():
             nombre = nombre_entry.get()

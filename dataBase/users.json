@@ -1,9 +1,9 @@
 [
     {
-        "nombre": "Adrian",
-        "email": "adriperezdomin@gmail.com",
+        "nombre": "Tester",
+        "email": "tester@gmail.com",
         "contrase\u00f1a": "1234567890",
         "matricula": "1234ABC",
-        "minusvalia": true
+        "minusvalia": false
     }
 ]
