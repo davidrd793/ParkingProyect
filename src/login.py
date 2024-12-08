@@ -160,8 +160,15 @@ class LoginInterface:
 
         # Checkbutton para minusvalía
         minusvalia_var = tk.BooleanVar()
-        tk.Label(self.root, text="¿Tienes minusvalía?").pack()
-        tk.Checkbutton(self.root, variable=minusvalia_var).pack()
+        tk.Label(self.root, text="¿Padece usted minusvalía?").pack()
+
+        def mostrar_mensaje_minusvalia():
+            if minusvalia_var.get():
+                messagebox.showinfo("IMPORTANTE", "Como medida temporal, para autenticar tu minusvalía debes mandarle un correo a administrador@gmail.com con un documento que acredite tu minusvalía. En un futuro próximo se añadirán formas más directas de autenticar la minusvalía. Lamentamos las molestias")
+
+        tk.Checkbutton(self.root, text="Si", 
+               variable=minusvalia_var, 
+               command=mostrar_mensaje_minusvalia).pack()
         
         # Vincular tecla ENTER
         nombre_entry.bind("<Return>", lambda event: registrar())
