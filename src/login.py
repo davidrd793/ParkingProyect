@@ -10,13 +10,12 @@ DATABASE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataBa
 
 # Clase Usuario
 class Usuario:
-    def __init__(self, nombre, email, contraseña, matricula, minusvalia, clave_usuario):
+    def __init__(self, nombre, email, contraseña, matricula, minusvalia):
         self.nombre = nombre
         self.email = email
         self.contraseña = contraseña
         self.matricula = matricula
         self.minusvalia = minusvalia
-        self.clave_usuario = clave_usuario
 
 
     def to_dict(self):
@@ -26,8 +25,7 @@ class Usuario:
             "email": self.email,
             "contraseña": self.contraseña,
             "matricula": self.matricula,
-            "minusvalia": self.minusvalia,
-            "clave_usuario": self.clave_usuario,
+            "minusvalia": self.minusvalia
         }
 
     @staticmethod
@@ -39,7 +37,6 @@ class Usuario:
             contraseña=data["contraseña"],  # Ya cifrada
             matricula=data["matricula"],
             minusvalia=data["minusvalia"],
-            clave_usuario=data["clave_usuario"],
         )
 
 
@@ -83,12 +80,12 @@ class Autenticacion:
     def __init__(self, db):
         self.db = db
 
-    def registrar_usuario(self, nombre, email, contraseña, matricula, minusvalia, clave_usuario):
+    def registrar_usuario(self, nombre, email, contraseña, matricula, minusvalia):
         """Registra un nuevo usuario en el sistema."""
         if self.db.buscar_usuario(email):
             return False, "El email ya está registrado."
 
-        nuevo_usuario = Usuario(nombre, email, contraseña, matricula, minusvalia, clave_usuario)
+        nuevo_usuario = Usuario(nombre, email, contraseña, matricula, minusvalia)
         self.db.agregar_usuario(nuevo_usuario)
         return True, "Usuario registrado exitosamente."
 
@@ -108,6 +105,7 @@ class Autenticacion:
 class LoginInterface:
     def __init__(self, root):
         self.root = root
+        self.root.geometry("1000x1000")
         self.root.title("Sistema de Login")
         self.db = BaseDeDatos(DATABASE_FILE)
         self.auth = Autenticacion(self.db)
@@ -118,7 +116,7 @@ class LoginInterface:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        tk.Label(self.root, text="Inicio de Sesión", font=("Arial", 16)).pack(pady=10)
+        tk.Label(self.root, text="Inicio de Sesión", font=("Arial", 24)).pack(pady=10)
         tk.Label(self.root, text="Email:").pack()
         email_entry = tk.Entry(self.root)
         email_entry.pack()
@@ -143,7 +141,7 @@ class LoginInterface:
             widget.destroy()
 
         # Títulos y campos de entrada
-        tk.Label(self.root, text="Registro de Usuario", font=("Arial", 16)).pack(pady=10)
+        tk.Label(self.root, text="Registro de Usuario", font=("Arial", 24)).pack(pady=10)
         tk.Label(self.root, text="Nombre:").pack()
         nombre_entry = tk.Entry(self.root)
         nombre_entry.pack()
@@ -161,12 +159,10 @@ class LoginInterface:
         minusvalia_var = tk.BooleanVar()
         tk.Label(self.root, text="¿Tienes minusvalía?").pack()
         tk.Checkbutton(self.root, variable=minusvalia_var).pack()
-
-        # Campo opcional para clave de usuario
-        tk.Label(self.root, text="Clave de Usuario (opcional):").pack()
-        clave_usuario_entry = tk.Entry(self.root)
-        clave_usuario_entry.pack()
-
+        
+        #Autenticación de minusvalía
+        if minusvalia_var is True:
+            messagebox.showinfo("Pues agarrame el pepino") 
         # Función para validar los datos
         def validar_datos():
             nombre = nombre_entry.get()
@@ -174,8 +170,6 @@ class LoginInterface:
             contraseña = password_entry.get()
             matricula = matricula_entry.get()
             minusvalia = minusvalia_var.get()
-            clave_usuario = clave_usuario_entry.get()
-
             # Validaciones
             if not nombre.isalpha():
                 messagebox.showerror("Error", "El nombre solo debe contener letras.")
@@ -183,8 +177,8 @@ class LoginInterface:
             if not ("@" in email and "." in email.split("@")[-1]):
                 messagebox.showerror("Error", "El email no tiene un formato válido.")
                 return False
-            if len(contraseña) < 4:
-                messagebox.showerror("Error", "La contraseña debe tener al menos 4 caracteres.")
+            if len(contraseña) < 9:
+                messagebox.showerror("Error", "La contraseña debe tener al menos 9 caracteres.")
                 return False
             if not (len(matricula) == 7 and matricula[:4].isdigit() and matricula[4:].isalpha()):
                 messagebox.showerror("Error", "La matrícula debe ser de 4 números seguidos de 3 letras.")
@@ -200,9 +194,8 @@ class LoginInterface:
                 contraseña = password_entry.get()
                 matricula = matricula_entry.get()
                 minusvalia = minusvalia_var.get()
-                clave_usuario = clave_usuario_entry.get()
                 exito, mensaje = self.auth.registrar_usuario(
-                    nombre, email, contraseña, matricula, minusvalia, clave_usuario
+                    nombre, email, contraseña, matricula, minusvalia
                 )
                 messagebox.showinfo("Registro", mensaje)
                 if exito:
@@ -219,10 +212,3 @@ class LoginInterface:
             widget.destroy()
         root = tk.Tk()
         visualization.ParkingGUI(root)
-
-
-# Ejecutar la aplicación
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = App(root)
-    root.mainloop()

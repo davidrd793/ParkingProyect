@@ -1,10 +1,9 @@
 [
     {
-        "nombre": "d",
-        "email": "d@d.com",
-        "contrase\u00f1a": "dddd",
-        "matricula": "1234ddd",
-        "minusvalia": true,
-        "clave_usuario": ""
+        "nombre": "Adrian",
+        "email": "adriperezdomin@gmail.com",
+        "contrase\u00f1a": "1234567890",
+        "matricula": "1234ABC",
+        "minusvalia": true
     }
 ]
