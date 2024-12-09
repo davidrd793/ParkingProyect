@@ -1,0 +1,6 @@
+*Optimización de la función draw_parking() -> Puede crearse en el objeto plaza todos los datos de una plaza y que esta función
+solo se ocupe de posicionarlas para dar forma de parking??
+
+*Puede modularizarse el código en varios archivos del estilo: scriptutils??
+
+*Cambiar Canvas() principal de la visualización por un Frame()??

@@ -1,4 +1,5 @@
 from tkinter import *
+from clases import *
 
 class ParkingGUI:
     def __init__(self, root):
@@ -19,13 +20,10 @@ class ParkingGUI:
         self.draw_parking()
 
     def draw_parking(self):
-        x, y = 150, 150
+        x, y = 0, 0
         width_plaza = 90
-        height_plaza = 110
+        height_plaza = 110 
 
-        # Aumentar la separación entre las plazas
-        horizontal_gap = 80  # Mayor separación horizontal entre plazas
-        vertical_gap = 80  # Mayor separación vertical entre filas de plazas
 
         self.plaza_coords = []
         for i, plaza in enumerate(aparcamiento.plazas):
@@ -35,10 +33,10 @@ class ParkingGUI:
             self.canvas.create_text(x + width_plaza / 2, y + height_plaza / 2, text=plaza.plaza_id, font=("Arial", 10), fill="white")
             if plaza.is_disabled:
                 self.canvas.create_text(x + width_plaza / 2, y + height_plaza - 20, text="DIS", font=("Arial", 8), fill="white")
-            x += width_plaza + horizontal_gap
+            x += width_plaza
             if (i + 1) % self.num_columnas == 0:
                 x = 150  # Volver al margen izquierdo
-                y += height_plaza + vertical_gap  # Salto de fila con espacio vertical
+                y += height_plaza  # Salto de fila con espacio vertical
 
         # Dibujar la entrada (rectángulo gris claro) en la parte superior izquierda
         self.canvas.create_rectangle(0, 0, 100, 100, fill="gray", outline="white", width=2)
@@ -52,6 +50,10 @@ class ParkingGUI:
         self.canvas.create_rectangle(salida_x1, salida_y1, salida_x2, salida_y2, fill="gray", outline="white", width=2)
         self.canvas.create_text(salida_x1 + (salida_x2 - salida_x1) / 2, salida_y1 + (salida_y2 - salida_y1) / 2, 
                                 text="Salida", font=("Arial", 12), fill="white")
+    
+    def draw_parking(self):
+        
+
 
 
 
