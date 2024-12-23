@@ -73,12 +73,12 @@ class ParkingGUI:
         self.draw_parking()
 
     def draw_parking(self):
-        x, y = 150, 150
-        width_plaza = 90
-        height_plaza = 110
+        x, y = 150, 100
+        width_plaza = 80
+        height_plaza = 100
 
-        horizontal_gap = 80
-        vertical_gap = 80
+        horizontal_gap = 60
+        vertical_gap = 60
 
         self.plaza_coords = []
         for i, plaza in enumerate(aparcamiento.plazas):
@@ -98,8 +98,8 @@ class ParkingGUI:
         self.canvas.create_text(50, 50, text="Entrada", font=("Arial", 12), fill="white")
 
 
-        self.canvas.create_rectangle(1100, 400, 1200, 500, fill="gray", outline="white", width=2)
-        self.canvas.create_text(1100 + (1200 - 1100) / 2, 400 + (500 - 400) / 2, 
+        self.canvas.create_rectangle(900, 500, 1000, 600, fill="gray", outline="white", width=2)
+        self.canvas.create_text(900 + (1000 - 900) / 2, 500 + (600 - 500) / 2, 
                                 text="Salida", font=("Arial", 12), fill="white")
     
     def generate_car(self):
