@@ -1,6 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
 
+matriculas = ['1234ABC', '1234BCD']
+
+# def check_disability(): ??
+
+
 # Clases del Sistema
 class Plaza:
     def __init__(self, plaza_id, size="medium", is_disabled=False):
@@ -21,7 +26,7 @@ class Plaza:
         self.vehicle = None
 
 
-class Vehiculo:
+class Vehicle:
     def __init__(self, plate, size="medium", is_disabled=False):
         self.plate = plate
         self.size = size
@@ -46,11 +51,22 @@ class ParkingGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Aparcamiento Inteligente")
-        self.root.geometry("1200x900")
+        self.root.geometry("800x900+20+20")
+        self.root.maxsize(width=1200, height=750)
+        self.root.minsize(width=1200, height=750) 
 
         # Crear un canvas para el aparcamiento
-        self.canvas = tk.Canvas(self.root, width=1200, height=900, bg="gray")
-        self.canvas.pack(pady=20)
+        self.canvas = tk.Canvas(self.root, width=1000, height=600, bg="gray")
+        self.canvas.grid(column=0, row=0, padx=100)
+
+        self.contenedor = tk.Frame(self.root, width=1000, height=100, bg='lightblue')
+        self.contenedor.grid(column=0, row=1, pady=25)
+
+        #Command del boton 1 llama a la función que añade un coche al parking
+        self.boton = tk.Button(self.contenedor, text='Add Car').grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
+        self.boton2 = tk.Button(self.contenedor, text='+1 Floor').grid(column=1, row=0, padx=10)
+        self.boton3 = tk.Button(self.contenedor, text='-1 Floor').grid(column=2, row=0, padx=10)
+
 
         # Dibujar aparcamiento
         self.num_columnas = 5

@@ -7,7 +7,22 @@ solo se ocupe de posicionarlas para dar forma de parking??
 
 
 
+-------------------------------------------
+MODIFICANDO VISUALIZATION
 
-------------------------------------------------------
-Compatibilidad con tkinter
-Modificar las historias de usuario ya que contemplan elementos reales que no se "utilizan" en nuestra simulación: sensores ... ??
+Crear base de datos para los coches temporales.
+Botón para generar un coche ?? -> Función random de generación.
+Algoritmo de asignación de plazas a los coches.
+Lista de matrículas posibles --> seleccionar una de forma aleatoria y asignar al coche cuando botón de añadir coche.
+                            |
+                            ----- > seleccionar una de forma aleatoria y eliminarla, añadirla cuando se detecte que el coche salio.
+
+IMPLEMENTACIÓN 
+
+Añadir un json para los coches generados y que no hayan salido del parking aun.
+Añadir un Frame (contenedor) que albergue los botones de generar coche y a futuro cambiar planta de visualización.
+Crear el objeto coche -> Crear dimensiones con rectangulos como hizo Sarah??
+    ----> Tiene una matrícula escogida de la lista de matrículas que simula la entrada del sensor de matrículas.
+    ----> Tiene atributo de plaza asignada a la que debe dirigirse.
+
+Algoritmo unico, se le pasa por argumento las plazas entre las que puede elegir (si hay minusvalia o no).
