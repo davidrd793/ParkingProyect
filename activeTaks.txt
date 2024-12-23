@@ -4,3 +4,10 @@ solo se ocupe de posicionarlas para dar forma de parking??
 *Puede modularizarse el código en varios archivos del estilo: scriptutils??
 
 *Cambiar Canvas() principal de la visualización por un Frame()??
+
+
+
+
+------------------------------------------------------
+Compatibilidad con tkinter
+Modificar las historias de usuario ya que contemplan elementos reales que no se "utilizan" en nuestra simulación: sensores ... ??
