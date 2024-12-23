@@ -27,11 +27,10 @@ class Plaza:
 
 
 class Vehicle:
-    def __init__(self, plate, size="medium", is_disabled=False):
+    def __init__(self, plate, size=(50, 30), is_disabled=False):
         self.plate = plate
         self.size = size
         self.is_disabled = is_disabled
-        self.car_id = f"Car_{plate}"
 
 
 class Aparcamiento:
@@ -49,6 +48,7 @@ aparcamiento = Aparcamiento(15)
 
 class ParkingGUI:
     def __init__(self, root):
+        #Initial window configuration
         self.root = root
         self.root.title("Aparcamiento Inteligente")
         self.root.geometry("800x900+20+20")
@@ -63,7 +63,7 @@ class ParkingGUI:
         self.contenedor.grid(column=0, row=1, pady=25)
 
         #Command del boton 1 llama a la función que añade un coche al parking
-        self.boton = tk.Button(self.contenedor, text='Add Car').grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
+        self.boton = tk.Button(self.contenedor, text='Add Car', command=self.generate_car).grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
         self.boton2 = tk.Button(self.contenedor, text='+1 Floor').grid(column=1, row=0, padx=10)
         self.boton3 = tk.Button(self.contenedor, text='-1 Floor').grid(column=2, row=0, padx=10)
 
@@ -97,14 +97,15 @@ class ParkingGUI:
         self.canvas.create_rectangle(0, 0, 100, 100, fill="gray", outline="white", width=2)
         self.canvas.create_text(50, 50, text="Entrada", font=("Arial", 12), fill="white")
 
-        # Dibujar la salida (rectángulo gris oscuro) en el centro de la parte derecha
-        salida_x1 = 1100
-        salida_y1 = 400
-        salida_x2 = 1200
-        salida_y2 = 500  
-        self.canvas.create_rectangle(salida_x1, salida_y1, salida_x2, salida_y2, fill="gray", outline="white", width=2)
-        self.canvas.create_text(salida_x1 + (salida_x2 - salida_x1) / 2, salida_y1 + (salida_y2 - salida_y1) / 2, 
+
+        self.canvas.create_rectangle(1100, 400, 1200, 500, fill="gray", outline="white", width=2)
+        self.canvas.create_text(1100 + (1200 - 1100) / 2, 400 + (500 - 400) / 2, 
                                 text="Salida", font=("Arial", 12), fill="white")
+    
+    def generate_car(self):
+        plate = matriculas[0]
+        car = Vehicle(plate)
+        car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='red', outline="black")
 
 
 if __name__=="__main__":
