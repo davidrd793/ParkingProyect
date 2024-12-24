@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
+import random
 
 matriculas = ['1234ABC', '1234BCD']
+places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
 
 # def check_disability(): ??
 
@@ -27,10 +29,11 @@ class Plaza:
 
 
 class Vehicle:
-    def __init__(self, plate, size=(50, 30), is_disabled=False):
+    def __init__(self, plate, assigned_place, size=(50, 30), is_disabled=False):
         self.plate = plate
         self.size = size
         self.is_disabled = is_disabled
+        self.assigned_place = assigned_place
 
 
 class Aparcamiento:
@@ -63,7 +66,7 @@ class ParkingGUI:
         self.contenedor.grid(column=0, row=1, pady=25)
 
         #Command del boton 1 llama a la función que añade un coche al parking
-        self.boton = tk.Button(self.contenedor, text='Add Car', command=self.generate_car).grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
+        self.add_car_button = tk.Button(self.contenedor, text='Add Car', command=self.generate_car).grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
         self.boton2 = tk.Button(self.contenedor, text='+1 Floor').grid(column=1, row=0, padx=10)
         self.boton3 = tk.Button(self.contenedor, text='-1 Floor').grid(column=2, row=0, padx=10)
 
@@ -79,15 +82,15 @@ class ParkingGUI:
 
         horizontal_gap = 60
         vertical_gap = 60
+        global places
 
-        self.plaza_coords = []
+        self.plaza_coords = {}
         for i, plaza in enumerate(aparcamiento.plazas):
             color = "blue" if plaza.is_disabled else "green"
-            self.plaza_coords.append((x, y, x + width_plaza, y + height_plaza))
+            self.plaza_coords[places[i]] = (x, y, x + width_plaza, y + height_plaza)
             self.canvas.create_rectangle(x, y, x + width_plaza, y + height_plaza, fill=color, outline="white", width=4, tags=plaza.plaza_id)
             self.canvas.create_text(x + width_plaza / 2, y + height_plaza / 2, text=plaza.plaza_id, font=("Arial", 10), fill="white")
-            if plaza.is_disabled:
-                self.canvas.create_text(x + width_plaza / 2, y + height_plaza - 20, text="DIS", font=("Arial", 8), fill="white")
+
             x += width_plaza + horizontal_gap
             if (i + 1) % self.num_columnas == 0:
                 x = 150  # Volver al margen izquierdo
@@ -104,8 +107,79 @@ class ParkingGUI:
     
     def generate_car(self):
         plate = matriculas[0]
-        car = Vehicle(plate)
-        car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='red', outline="black")
+        assigned_place = self.assign_place()
+        car = Vehicle(plate, assigned_place)
+        car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='blue', outline="black")
+        self.car_movement(car_vis, assigned_place)
+    
+    def assign_place(self):
+        selected_place = random.choice(places)
+        places.remove(selected_place)
+        return selected_place
+
+    def car_movement(self, car, place):
+        x1, y1, x2, y2 = self.plaza_coords[place]
+        target_x = (x1 + x2) / 2
+        target_y = (y1 + y2) / 2
+        current_coords = self.canvas.coords(car)
+        print(current_coords)
+        car_center_x = (current_coords[0] + current_coords[2]) / 2
+        car_center_y = (current_coords[1] + current_coords[3]) / 2
+
+        # Move horizontally until 20px before the target x position
+        while abs(car_center_x - target_x) > 20:
+            if car_center_x < target_x - 20:
+                car_center_x += 1
+            elif car_center_x > target_x + 20:
+                car_center_x -= 1
+
+            new_coords = [
+                car_center_x - (current_coords[2] - current_coords[0]) / 2,
+                car_center_y - (current_coords[3] - current_coords[1]) / 2,
+                car_center_x + (current_coords[2] - current_coords[0]) / 2,
+                car_center_y + (current_coords[3] - current_coords[1]) / 2,
+            ]
+
+            self.canvas.coords(car, new_coords)
+            self.canvas.update()
+            self.canvas.after(5)
+
+        # Move vertically until aligned with the target y position
+        while car_center_y != target_y:
+            if car_center_y < target_y:
+                car_center_y += 10
+            elif car_center_y > target_y:
+                car_center_y -= 10
+
+            new_coords = [
+                car_center_x - (current_coords[2] - current_coords[0]) / 2,
+                car_center_y - (current_coords[3] - current_coords[1]) / 2,
+                car_center_x + (current_coords[2] - current_coords[0]) / 2,
+                car_center_y + (current_coords[3] - current_coords[1]) / 2,
+            ]
+
+            self.canvas.coords(car, new_coords)
+            self.canvas.update()
+            self.canvas.after(5)
+
+        # Move the remaining 20px horizontally to enter the plaza
+        while car_center_x != target_x:
+            if car_center_x < target_x:
+                car_center_x += 10
+            elif car_center_x > target_x:
+                car_center_x -= 10
+
+            new_coords = [
+                car_center_x - (current_coords[2] - current_coords[0]) / 2,
+                car_center_y - (current_coords[3] - current_coords[1]) / 2,
+                car_center_x + (current_coords[2] - current_coords[0]) / 2,
+                car_center_y + (current_coords[3] - current_coords[1]) / 2,
+            ]
+
+            self.canvas.coords(car, new_coords)
+            self.canvas.update()
+            self.canvas.after(5)
+
 
 
 if __name__=="__main__":
@@ -113,3 +187,68 @@ if __name__=="__main__":
     root = tk.Tk()
     app = ParkingGUI(root)
     root.mainloop()
+
+
+
+
+    def car_movement(self, car, place):
+        x1, y1, x2, y2 = self.plaza_coords[place]
+        target_x = (x1 + x2) / 2
+        target_y = (y1 + y2) / 2
+        current_coords = self.canvas.coords(car)
+        car_center_x = (current_coords[0] + current_coords[2]) / 2
+        car_center_y = (current_coords[1] + current_coords[3]) / 2
+
+        # Move horizontally until 20px before the target x position
+        while abs(x2 - target_x) > 20:
+            if car_center_x < target_x - 20:
+                car_center_x += 1
+            elif car_center_x > target_x + 20:
+                car_center_x -= 1
+
+            new_coords = [
+                car_center_x - (current_coords[2] - current_coords[0]) / 2,
+                car_center_y - (current_coords[3] - current_coords[1]) / 2,
+                car_center_x + (current_coords[2] - current_coords[0]) / 2,
+                car_center_y + (current_coords[3] - current_coords[1]) / 2,
+            ]
+
+            self.canvas.coords(car, new_coords)
+            self.canvas.update()
+            self.canvas.after(5)
+
+        # Move vertically until aligned with the target y position
+        while car_center_y != target_y:
+            if car_center_y < target_y:
+                car_center_y += 10
+            elif car_center_y > target_y:
+                car_center_y -= 10
+
+            new_coords = [
+                car_center_x - (current_coords[2] - current_coords[0]) / 2,
+                car_center_y - (current_coords[3] - current_coords[1]) / 2,
+                car_center_x + (current_coords[2] - current_coords[0]) / 2,
+                car_center_y + (current_coords[3] - current_coords[1]) / 2,
+            ]
+
+            self.canvas.coords(car, new_coords)
+            self.canvas.update()
+            self.canvas.after(5)
+
+        # Move the remaining 20px horizontally to enter the plaza
+        while car_center_x != target_x:
+            if car_center_x < target_x:
+                car_center_x += 10
+            elif car_center_x > target_x:
+                car_center_x -= 10
+
+            new_coords = [
+                car_center_x - (current_coords[2] - current_coords[0]) / 2,
+                car_center_y - (current_coords[3] - current_coords[1]) / 2,
+                car_center_x + (current_coords[2] - current_coords[0]) / 2,
+                car_center_y + (current_coords[3] - current_coords[1]) / 2,
+            ]
+
+            self.canvas.coords(car, new_coords)
+            self.canvas.update()
+            self.canvas.after(5)
