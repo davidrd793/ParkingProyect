@@ -252,3 +252,5 @@ if __name__=="__main__":
             self.canvas.coords(car, new_coords)
             self.canvas.update()
             self.canvas.after(5)
+
+
