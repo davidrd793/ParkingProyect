@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+import threading
 
 matriculas = ['1234ABC', '1234BCD']
 places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
@@ -110,75 +111,112 @@ class ParkingGUI:
         assigned_place = self.assign_place()
         car = Vehicle(plate, assigned_place)
         car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='blue', outline="black")
-        self.car_movement(car_vis, assigned_place)
+        threading.Thread(target=self.car_movement, args=(car_vis, assigned_place)).start()
     
     def assign_place(self):
         selected_place = random.choice(places)
         places.remove(selected_place)
         return selected_place
-
+    
     def car_movement(self, car, place):
         x1, y1, x2, y2 = self.plaza_coords[place]
-        target_x = (x1 + x2) / 2
-        target_y = (y1 + y2) / 2
+        place_center_x = (x1 + x2) / 2
+        place_center_y = (y1 + y2) / 2
+
         current_coords = self.canvas.coords(car)
-        print(current_coords)
-        car_center_x = (current_coords[0] + current_coords[2]) / 2
-        car_center_y = (current_coords[1] + current_coords[3]) / 2
+        car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move horizontally until 20px before the target x position
-        while abs(car_center_x - target_x) > 20:
-            if car_center_x < target_x - 20:
-                car_center_x += 1
-            elif car_center_x > target_x + 20:
-                car_center_x -= 1
+        while abs(car_x2 - x1) > 10:
+            if car_x2 < x1 - 10:
+                movement_x = 2
+            elif car_x2 > x1 + 10:
+                movement_x = -2
+            else:
+                break
 
-            new_coords = [
-                car_center_x - (current_coords[2] - current_coords[0]) / 2,
-                car_center_y - (current_coords[3] - current_coords[1]) / 2,
-                car_center_x + (current_coords[2] - current_coords[0]) / 2,
-                car_center_y + (current_coords[3] - current_coords[1]) / 2,
-            ]
-
-            self.canvas.coords(car, new_coords)
+            self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(5)
+            self.canvas.after(10)
+
+            current_coords = self.canvas.coords(car)
+            car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move vertically until aligned with the target y position
-        while car_center_y != target_y:
-            if car_center_y < target_y:
-                car_center_y += 10
-            elif car_center_y > target_y:
-                car_center_y -= 10
+        while abs((car_y1 + car_y2) / 2 - place_center_y) > 1:
+            if (car_y1 + car_y2) / 2 < place_center_y:
+                movement_y = 2
+            elif (car_y1 + car_y2) / 2 > place_center_y:
+                movement_y = -2
+            else:
+                break
 
-            new_coords = [
-                car_center_x - (current_coords[2] - current_coords[0]) / 2,
-                car_center_y - (current_coords[3] - current_coords[1]) / 2,
-                car_center_x + (current_coords[2] - current_coords[0]) / 2,
-                car_center_y + (current_coords[3] - current_coords[1]) / 2,
-            ]
-
-            self.canvas.coords(car, new_coords)
+            self.canvas.move(car, 0, movement_y)
             self.canvas.update()
-            self.canvas.after(5)
+            self.canvas.after(10)
+
+            current_coords = self.canvas.coords(car)
+            car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move the remaining 20px horizontally to enter the plaza
-        while car_center_x != target_x:
-            if car_center_x < target_x:
-                car_center_x += 10
-            elif car_center_x > target_x:
-                car_center_x -= 10
+        while abs((car_x1 + car_x2) / 2 - place_center_x) > 1:
+            if (car_x1 + car_x2) / 2 < place_center_x:
+                movement_x = 2
+            elif (car_x1 + car_x2) / 2 > place_center_x:
+                movement_x = -2
+            else:
+                break
 
-            new_coords = [
-                car_center_x - (current_coords[2] - current_coords[0]) / 2,
-                car_center_y - (current_coords[3] - current_coords[1]) / 2,
-                car_center_x + (current_coords[2] - current_coords[0]) / 2,
-                car_center_y + (current_coords[3] - current_coords[1]) / 2,
-            ]
-
-            self.canvas.coords(car, new_coords)
+            self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(5)
+            self.canvas.after(10)
+
+            current_coords = self.canvas.coords(car)
+            car_x1, car_y1, car_x2, car_y2 = current_coords
+    
+        # Wait for a random time between 2 and 10 seconds
+        time.sleep(wait_time)
+
+        # Move towards the exit
+        exit_x1, exit_y1, exit_x2, exit_y2 = 900, 500, 1000, 600
+        exit_center_x = (exit_x1 + exit_x2) / 2
+        exit_center_y = (exit_y1 + exit_y2) / 2
+
+        # Move horizontally towards the exit
+        while abs((car_x1 + car_x2) / 2 - exit_center_x) > 1:
+            if (car_x1 + car_x2) / 2 < exit_center_x:
+                movement_x = 10
+            elif (car_x1 + car_x2) / 2 > exit_center_x:
+                movement_x = -10
+            else:
+                break
+
+            self.canvas.move(car, movement_x, 0)
+            self.canvas.update()
+            self.canvas.after(50)
+
+            current_coords = self.canvas.coords(car)
+            car_x1, car_y1, car_x2, car_y2 = current_coords
+
+        # Move vertically towards the exit
+        while abs((car_y1 + car_y2) / 2 - exit_center_y) > 1:
+            if (car_y1 + car_y2) / 2 < exit_center_y:
+                movement_y = 10
+            elif (car_y1 + car_y2) / 2 > exit_center_y:
+                movement_y = -10
+            else:
+                break
+
+            self.canvas.move(car, 0, movement_y)
+            self.canvas.update()
+            self.canvas.after(50)
+
+            current_coords = self.canvas.coords(car)
+            car_x1, car_y1, car_x2, car_y2 = current_coords
+
+        # Remove the car once it reaches the exit
+        self.canvas.delete(car)
+
 
 
 
@@ -187,70 +225,4 @@ if __name__=="__main__":
     root = tk.Tk()
     app = ParkingGUI(root)
     root.mainloop()
-
-
-
-
-    def car_movement(self, car, place):
-        x1, y1, x2, y2 = self.plaza_coords[place]
-        target_x = (x1 + x2) / 2
-        target_y = (y1 + y2) / 2
-        current_coords = self.canvas.coords(car)
-        car_center_x = (current_coords[0] + current_coords[2]) / 2
-        car_center_y = (current_coords[1] + current_coords[3]) / 2
-
-        # Move horizontally until 20px before the target x position
-        while abs(x2 - target_x) > 20:
-            if car_center_x < target_x - 20:
-                car_center_x += 1
-            elif car_center_x > target_x + 20:
-                car_center_x -= 1
-
-            new_coords = [
-                car_center_x - (current_coords[2] - current_coords[0]) / 2,
-                car_center_y - (current_coords[3] - current_coords[1]) / 2,
-                car_center_x + (current_coords[2] - current_coords[0]) / 2,
-                car_center_y + (current_coords[3] - current_coords[1]) / 2,
-            ]
-
-            self.canvas.coords(car, new_coords)
-            self.canvas.update()
-            self.canvas.after(5)
-
-        # Move vertically until aligned with the target y position
-        while car_center_y != target_y:
-            if car_center_y < target_y:
-                car_center_y += 10
-            elif car_center_y > target_y:
-                car_center_y -= 10
-
-            new_coords = [
-                car_center_x - (current_coords[2] - current_coords[0]) / 2,
-                car_center_y - (current_coords[3] - current_coords[1]) / 2,
-                car_center_x + (current_coords[2] - current_coords[0]) / 2,
-                car_center_y + (current_coords[3] - current_coords[1]) / 2,
-            ]
-
-            self.canvas.coords(car, new_coords)
-            self.canvas.update()
-            self.canvas.after(5)
-
-        # Move the remaining 20px horizontally to enter the plaza
-        while car_center_x != target_x:
-            if car_center_x < target_x:
-                car_center_x += 10
-            elif car_center_x > target_x:
-                car_center_x -= 10
-
-            new_coords = [
-                car_center_x - (current_coords[2] - current_coords[0]) / 2,
-                car_center_y - (current_coords[3] - current_coords[1]) / 2,
-                car_center_x + (current_coords[2] - current_coords[0]) / 2,
-                car_center_y + (current_coords[3] - current_coords[1]) / 2,
-            ]
-
-            self.canvas.coords(car, new_coords)
-            self.canvas.update()
-            self.canvas.after(5)
-
 
