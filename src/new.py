@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import threading
+import time
 
 matriculas = ['1234ABC', '1234BCD']
 places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
@@ -130,10 +131,6 @@ class ParkingGUI:
         while abs(car_x2 - x1) > 10:
             if car_x2 < x1 - 10:
                 movement_x = 2
-            elif car_x2 > x1 + 10:
-                movement_x = -2
-            else:
-                break
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
@@ -146,10 +143,6 @@ class ParkingGUI:
         while abs((car_y1 + car_y2) / 2 - place_center_y) > 1:
             if (car_y1 + car_y2) / 2 < place_center_y:
                 movement_y = 2
-            elif (car_y1 + car_y2) / 2 > place_center_y:
-                movement_y = -2
-            else:
-                break
 
             self.canvas.move(car, 0, movement_y)
             self.canvas.update()
@@ -162,10 +155,6 @@ class ParkingGUI:
         while abs((car_x1 + car_x2) / 2 - place_center_x) > 1:
             if (car_x1 + car_x2) / 2 < place_center_x:
                 movement_x = 2
-            elif (car_x1 + car_x2) / 2 > place_center_x:
-                movement_x = -2
-            else:
-                break
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
@@ -175,6 +164,7 @@ class ParkingGUI:
             car_x1, car_y1, car_x2, car_y2 = current_coords
     
         # Wait for a random time between 2 and 10 seconds
+        wait_time= random.randint(2, 10)
         time.sleep(wait_time)
 
         # Move towards the exit
@@ -183,17 +173,13 @@ class ParkingGUI:
         exit_center_y = (exit_y1 + exit_y2) / 2
 
         # Move horizontally towards the exit
-        while abs((car_x1 + car_x2) / 2 - exit_center_x) > 1:
+        for i in range(37):
             if (car_x1 + car_x2) / 2 < exit_center_x:
-                movement_x = 10
-            elif (car_x1 + car_x2) / 2 > exit_center_x:
-                movement_x = -10
-            else:
-                break
+                movement_x = 2
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(50)
+            self.canvas.after(10)
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
@@ -201,18 +187,28 @@ class ParkingGUI:
         # Move vertically towards the exit
         while abs((car_y1 + car_y2) / 2 - exit_center_y) > 1:
             if (car_y1 + car_y2) / 2 < exit_center_y:
-                movement_y = 10
-            elif (car_y1 + car_y2) / 2 > exit_center_y:
-                movement_y = -10
-            else:
-                break
+                movement_y = 2
 
             self.canvas.move(car, 0, movement_y)
             self.canvas.update()
-            self.canvas.after(50)
+            self.canvas.after(10)
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
+        
+        while abs((car_x1 + car_x2) / 2 - exit_center_x) > 1:
+            if (car_x1 + car_x2) / 2 < exit_center_x:
+                movement_x = 2
+
+            self.canvas.move(car, movement_x, 0)
+            self.canvas.update()
+            self.canvas.after(10)
+
+            current_coords = self.canvas.coords(car)
+            car_x1, car_y1, car_x2, car_y2 = current_coords
+
+        
+
 
         # Remove the car once it reaches the exit
         self.canvas.delete(car)
