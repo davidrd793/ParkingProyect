@@ -165,7 +165,7 @@ class LoginInterface:
 
         def mostrar_mensaje_minusvalia():
             if minusvalia_var.get():
-                messagebox.showinfo("IMPORTANTE", "Como medida temporal, para autenticar tu minusvalía debes mandarle un correo a administrador@gmail.com con un documento que acredite tu minusvalía. En un futuro próximo se añadirán formas más directas de autenticar la minusvalía. Lamentamos las molestias")
+                messagebox.showinfo("IMPORTANTE", "Recuerde presentar su tarjeta de minusvalía en la entrada del parking.")
 
         tk.Checkbutton(self.root, text="Si", 
                variable=minusvalia_var, 

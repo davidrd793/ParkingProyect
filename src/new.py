@@ -4,9 +4,12 @@ import random
 import threading
 import time
 
-matriculas = ['1234ABC', '1234BCD']
-places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
+matriculas = ['7601YUD', '9337JIH', '3560ANE', '8201QAL', '1487PRM', '3716KGV', '3208CJV', '8057HMF', '7121DGQ', '4523ZDP', 
+ '9397SYK', '1512QFP', '0178TKQ', '9804AYJ', '3624EUH', '4477LKW', '0028JVC', '9881JWY', '4197SNA', '9291SET', 
+ '8060ZHO', '4716QKX', '6802CPT', '2841NDY', '4608QRL', '7524LRK', '3955FTF', '7870FNH', '5067FSD', '4800OBO', 
+ '7366YGC', '3041QQY', '3077LGS', '5398YJB', '8817EQY', '7860DWA', '6549RUS', '8912ZBL', '7689TBW', '6508USD']
 
+places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
 
 # System classes
 class Place:
@@ -61,8 +64,7 @@ class ParkingGUI:
         # Crear un canvas para el parking
         self.canvas = tk.Canvas(self.root, width=1000, height=600, bg="gray")
         self.canvas.grid(column=0, row=0, padx=100)
-
-        self.button_container = tk.Frame(self.root, width=1000, height=100, bg='lightblue')
+        self.button_container = tk.Frame(self.root, width=1000, height=100)
         self.button_container.grid(column=0, row=1, pady=25)
 
         #Command del boton 1 llama a la función que añade un coche al parking
@@ -104,57 +106,66 @@ class ParkingGUI:
                                 text="Salida", font=("Arial", 12), fill="white")
     
     def generate_car(self):
-        plate = matriculas[0]
+        plate = self.random_plate()
         assigned_place = self.assign_place()
+        print(f"Coche con matrícula {plate} ha entrado al parking, su plaza asignada es {assigned_place}")
         car = Vehicle(plate, assigned_place)
-        car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='blue', outline="black")
-        threading.Thread(target=self.car_movement, args=(car_vis, assigned_place)).start()
+        car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='blue', outline="black",width = 2)
+        threading.Thread(target=self.car_movement, args=(car_vis, assigned_place, plate)).start()
     
+    def random_plate(self):
+        matricula = random.choice(matriculas)
+        matriculas.remove(matricula)
+        return matricula
     def assign_place(self):
         selected_place = random.choice(places)
         places.remove(selected_place)
         return selected_place
     
-    def car_movement(self, car, place):
+    def car_movement(self, car, place, plate):
         x1, y1, x2, y2 = self.plaza_coords[place]
         place_center_x = (x1 + x2) / 2
         place_center_y = (y1 + y2) / 2
 
+        global num_coches
         current_coords = self.canvas.coords(car)
         car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move horizontally until 20px before the target x position
+        print(f"Coche de matrícula {plate}, vaya recto")
         while abs(car_x2 - x1) > 10:
             if car_x2 < x1 - 10:
                 movement_x = 2
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(10)
+            self.canvas.after(int(10))
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move vertically until aligned with the target y position
+        print(f"Coche de matrícula {plate}, gire hacia la derecha y siga recto")
         while abs((car_y1 + car_y2) / 2 - place_center_y) > 1:
             if (car_y1 + car_y2) / 2 < place_center_y:
                 movement_y = 2
 
             self.canvas.move(car, 0, movement_y)
             self.canvas.update()
-            self.canvas.after(10)
+            self.canvas.after(int(10))
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move the remaining 20px horizontally to enter the plaza
+        print(f"Coche de matrícula {plate}, la plaza a su izquierda es la que se le fue asignada")
         while abs((car_x1 + car_x2) / 2 - place_center_x) > 1:
             if (car_x1 + car_x2) / 2 < place_center_x:
                 movement_x = 2
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(10)
+            self.canvas.after(int(10))
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
@@ -163,51 +174,55 @@ class ParkingGUI:
         wait_time= random.randint(2, 10)
         time.sleep(wait_time)
 
-        # Move towards the exit
+        # Exit coordenates
         exit_x1, exit_y1, exit_x2, exit_y2 = 900, 500, 1000, 600
         exit_center_x = (exit_x1 + exit_x2) / 2
         exit_center_y = (exit_y1 + exit_y2) / 2
 
         # Move horizontally towards the exit
+        print(f"Coche de matrícula {plate}, salga del aparcamiento por delante")
         for i in range(37):
             if (car_x1 + car_x2) / 2 < exit_center_x:
                 movement_x = 2
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(10)
+            self.canvas.after(int(10))
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
 
         # Move vertically towards the exit
+        print(f'Coche de matrícula {plate} gire a la derecha y siga recto hasta el final del pasillo')
         while abs((car_y1 + car_y2) / 2 - exit_center_y) > 1:
             if (car_y1 + car_y2) / 2 < exit_center_y:
                 movement_y = 2
 
             self.canvas.move(car, 0, movement_y)
             self.canvas.update()
-            self.canvas.after(10)
+            self.canvas.after(int(10))
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
         
+        print(f'Coche de matrícula {plate}, gire a la izquierda y avance hasta la salida')
         while abs((car_x1 + car_x2) / 2 - exit_center_x) > 1:
             if (car_x1 + car_x2) / 2 < exit_center_x:
                 movement_x = 2
 
             self.canvas.move(car, movement_x, 0)
             self.canvas.update()
-            self.canvas.after(10)
+            self.canvas.after(int(10))
 
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
-
         
-
-
+        print(f'Coche de matrícula {plate} ha salido del parking')
+ 
         # Remove the car once it reaches the exit
         self.canvas.delete(car)
+        num_coches -= 1
+        places.append(place)
 
 
 

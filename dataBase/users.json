@@ -5,5 +5,19 @@
         "contrase\u00f1a": "1234567890",
         "matricula": "1234ABC",
         "minusvalia": false
+    },
+    {
+        "nombre": "Minusvalido1",
+        "email": "minusvalido1@gmail.com",
+        "contrase\u00f1a": "0987654321",
+        "matricula": "8817EQY",
+        "minusvalia": true
+    },
+    {
+        "nombre": "Minusvalido2",
+        "email": "minusvalido2@gmail.com",
+        "contrase\u00f1a": "qwertyuiop",
+        "matricula": "2841NDY",
+        "minusvalia":true
     }
 ]
