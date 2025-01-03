@@ -1,8 +1,12 @@
 import tkinter as tk
-from tkinter import messagebox
 import random
 import threading
 import time
+from datetime import datetime
+import json
+import os
+
+DATABASE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataBase", "cars.json")
 
 matriculas = ['7601YUD', '9337JIH', '3560ANE', '8201QAL', '1487PRM', '3716KGV', '3208CJV', '8057HMF', '7121DGQ', '4523ZDP', 
  '9397SYK', '1512QFP', '0178TKQ', '9804AYJ', '3624EUH', '4477LKW', '0028JVC', '9881JWY', '4197SNA', '9291SET', 
@@ -10,6 +14,7 @@ matriculas = ['7601YUD', '9337JIH', '3560ANE', '8201QAL', '1487PRM', '3716KGV', 
  '7366YGC', '3041QQY', '3077LGS', '5398YJB', '8817EQY', '7860DWA', '6549RUS', '8912ZBL', '7689TBW', '6508USD']
 
 places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
+disabled_places = ['P1', 'P2', 'P3']
 
 # System classes
 class Place:
@@ -110,6 +115,28 @@ class ParkingGUI:
         assigned_place = self.assign_place()
         print(f"Coche con matrícula {plate} ha entrado al parking, su plaza asignada es {assigned_place}")
         car = Vehicle(plate, assigned_place)
+
+        # Save the car data to the database
+        data_to_save = {
+            "matrícula": plate,
+            "plaza": assigned_place,
+            "hora_aparcamiento": None,
+        }
+        
+        global DATABASE_FILE
+
+        try:
+            with open(DATABASE_FILE, 'r') as file:
+                cars = json.load(file)
+        
+        except (FileNotFoundError, json.JSONDecodeError):
+            cars = []
+        
+        cars.append(data_to_save)
+
+        with open(DATABASE_FILE, 'w') as file:
+            json.dump(cars, file, indent=4)
+
         car_vis = self.canvas.create_rectangle(50, 50, 50+car.size[0], 50+car.size[1], fill='blue', outline="black",width = 2)
         threading.Thread(target=self.car_movement, args=(car_vis, assigned_place, plate)).start()
     
@@ -117,6 +144,7 @@ class ParkingGUI:
         matricula = random.choice(matriculas)
         matriculas.remove(matricula)
         return matricula
+    
     def assign_place(self):
         selected_place = random.choice(places)
         places.remove(selected_place)
@@ -127,7 +155,6 @@ class ParkingGUI:
         place_center_x = (x1 + x2) / 2
         place_center_y = (y1 + y2) / 2
 
-        global num_coches
         current_coords = self.canvas.coords(car)
         car_x1, car_y1, car_x2, car_y2 = current_coords
 
@@ -170,8 +197,19 @@ class ParkingGUI:
             current_coords = self.canvas.coords(car)
             car_x1, car_y1, car_x2, car_y2 = current_coords
     
-        # Wait for a random time between 2 and 10 seconds
-        wait_time= random.randint(2, 10)
+        # Update the database with the parking time
+        global DATABASE_FILE
+        with open(DATABASE_FILE, 'r') as file:
+            cars = json.load(file)
+            for i in cars:
+                if i["matrícula"] == plate and i["hora_aparcamiento"] is None:
+                    i["hora_aparcamiento"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        with open(DATABASE_FILE, 'w') as file:
+            json.dump(cars, file, indent=4)
+        
+        # Wait 2 seconds parked
+        wait_time= 2
         time.sleep(wait_time)
 
         # Exit coordenates
@@ -219,11 +257,19 @@ class ParkingGUI:
         
         print(f'Coche de matrícula {plate} ha salido del parking')
  
-        # Remove the car once it reaches the exit
-        self.canvas.delete(car)
-        num_coches -= 1
-        places.append(place)
+        # Remove the car once it reaches the exit both in the database and the GUI
+        with open(DATABASE_FILE, 'r') as file:
+            cars = json.load(file)
+            for i in cars:
+                if i["matrícula"] == plate:
+                    cars.remove(i)
+        
+        with open(DATABASE_FILE, 'w') as file:
+            json.dump(cars, file, indent=4)
 
+        self.canvas.delete(car)
+        places.append(place)
+        matriculas.append(plate)
 
 
 
