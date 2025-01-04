@@ -19,8 +19,7 @@ class User:
         self.disability = disability
 
 
-    def to_dict(self) -> dict:
-        """Convierte el objeto User en un diccionario."""
+    def to_dict(self) -> dict: 
         return {
             "name": self.name,
             "email": self.email,
@@ -31,7 +30,6 @@ class User:
 
     @staticmethod
     def from_dict(data: dict):
-        """Crea un objeto User a partir de un diccionario."""
         return User(
             name=data["name"],
             email=data["email"],
@@ -47,7 +45,6 @@ class DataBase:
         self.users = self.load_users()
 
     def load_users(self) -> list:
-        """Carga los users desde el file JSON."""
         try:
             with open(self.file, "r") as f:
                 all_data = json.load(f)
@@ -58,17 +55,14 @@ class DataBase:
             return []
 
     def save_users(self) -> None:
-        """Guarda los users en el file JSON."""
         with open(self.file, "w") as f:
             json.dump([single_data.to_dict() for single_data in self.users], f, indent=4)
 
     def add_user(self, user) -> None:
-        """Agrega un user a la base de all_data."""
         self.users.append(user)
         self.save_users()
 
     def search_user(self, email):
-        """Busca un user por email."""
         for user in self.users:
             if user.email == email:
                 return user
@@ -80,19 +74,18 @@ class Autenticacion:
         self.db = db
 
     def user_registry(self, name: str, email: str, password: str, plate: str, disability: bool) -> tuple:
-        """Registra un nuevo user en el sistema."""
         if self.db.search_user(email):
             return False, "El email ya está registrado."
 
         new_user = User(name, email, password, plate, disability)
         self.db.add_user(new_user)
-        return True, "User registrado exitosamente."
+        return True, "Usuario registrado exitosamente."
 
     def log_in(self, email: str, password: str) -> tuple:
         """Inicia sesión verificando las credenciales."""
         user = self.db.search_user(email)
         if not user:
-            return False, "User no encontrado."
+            return False, "Usuario no encontrado."
 
         if user.password == password:
             return True, f"Bienvenido, {user.name}."
@@ -111,7 +104,6 @@ class LoginInterface:
         self.show_login_screen()
 
     def show_login_screen(self) -> None:
-        """Pantalla de inicio de sesión."""
         for widget in self.root.winfo_children():
             widget.destroy()
 
@@ -135,15 +127,14 @@ class LoginInterface:
                 self.show_visualization()
 
         tk.Button(self.root, text="Iniciar Sesión", command=log_in).pack(pady=10)
-        tk.Button(self.root, text="Registrarse", command=self.mostrar_registro).pack()
+        tk.Button(self.root, text="Registrarse", command=self.sign_in_screen).pack()
 
-    def mostrar_registro(self) -> None:
-        """Pantalla de registro con validaciones."""
+    def sign_in_screen(self) -> None:
         for widget in self.root.winfo_children():
             widget.destroy()
 
         # Títulos y campos de entrada
-        tk.Label(self.root, text="Registro de User", font=("Arial", 24)).pack(pady=10)
+        tk.Label(self.root, text="Registro de usuario", font=("Arial", 24)).pack(pady=10)
         tk.Label(self.root, text="Nombre:").pack()
         name_entry = tk.Entry(self.root)
         name_entry.pack()
@@ -184,13 +175,13 @@ class LoginInterface:
             disability = disability_var.get()
             # Validaciones
             if not name.isalpha():
-                messagebox.showerror("Error", "El name solo debe contener letras.")
+                messagebox.showerror("Error", "El nombre solo debe contener letras.")
                 return False
             if not ("@" in email and "." in email.split("@")[-1]):
                 messagebox.showerror("Error", "El email no tiene un formato válido.")
                 return False
             if len(password) < 9:
-                messagebox.showerror("Error", "La password debe tener al menos 9 caracteres.")
+                messagebox.showerror("Error", "La contraseña debe tener al menos 9 caracteres.")
                 return False
             if not (len(plate) == 7 and plate[:4].isdigit() and plate[4:].isalpha()):
                 messagebox.showerror("Error", "La matrícula debe ser de 4 números seguidos de 3 letras.")
@@ -218,11 +209,8 @@ class LoginInterface:
         tk.Button(self.root, text="Volver", command=self.show_login_screen).pack()
 
 
-    def show_visualization(self) -> None:
-        """Pantalla de bienvenida tras iniciar sesión."""
+    def show_visualization(self) -> None: #Redirige a la visualización de la app en sí
         for widget in self.root.winfo_children():
             widget.destroy()
         root = tk.Tk()
         visualization.ParkingGUI(root)
-
-#Probando gitignore
