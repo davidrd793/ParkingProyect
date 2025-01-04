@@ -11,7 +11,7 @@ DATABASE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataBa
 
 # Clase Usuario
 class Usuario:
-    def __init__(self, nombre, email, contraseña, matricula, minusvalia):
+    def __init__(self, nombre: str, email: str, contraseña: str, matricula: str, minusvalia: bool) -> None:
         self.nombre = nombre
         self.email = email
         self.contraseña = contraseña
@@ -19,7 +19,7 @@ class Usuario:
         self.minusvalia = minusvalia
 
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Convierte el objeto Usuario en un diccionario."""
         return {
             "nombre": self.nombre,
@@ -30,7 +30,7 @@ class Usuario:
         }
 
     @staticmethod
-    def from_dict(data):
+    def from_dict(data: dict):
         """Crea un objeto Usuario a partir de un diccionario."""
         return Usuario(
             nombre=data["nombre"],
