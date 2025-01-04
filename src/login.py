@@ -226,3 +226,5 @@ class LoginInterface:
             widget.destroy()
         root = tk.Tk()
         visualization.ParkingGUI(root)
+
+#Probando gitignore
