@@ -1,2 +1,5 @@
-*.txt
-!requirements.txt
+
+
+#__pycache__ files
+/src/__pycache__/
+*.pyc  
