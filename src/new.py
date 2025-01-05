@@ -66,13 +66,13 @@ class ParkingGUI:
         self.root.maxsize(width=1200, height=750)
         self.root.minsize(width=1200, height=750) 
 
-        # Crear un canvas para el parking
+        # Contenedor para la visualización
         self.canvas = tk.Canvas(self.root, width=1000, height=600, bg="gray")
         self.canvas.grid(column=0, row=0, padx=100)
+
+        #Contenedor para el botón
         self.button_container = tk.Frame(self.root, width=1000, height=100)
         self.button_container.grid(column=0, row=1, pady=25)
-
-        #Command del boton 1 llama a la función que añade un coche al parking
         self.add_car_button = tk.Button(self.button_container, text='Add Car', command=self.generate_car).grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
 
 
