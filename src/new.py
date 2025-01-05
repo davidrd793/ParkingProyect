@@ -149,6 +149,10 @@ class ParkingGUI:
         selected_place = random.choice(places)
         places.remove(selected_place)
         return selected_place
+
+    def change_parking_spot_color(self, canvas, spot, color):
+        canvas.itemconfig(spot, fill=color)
+        canvas.update()
     
     def car_movement(self, car, place, plate):
         x1, y1, x2, y2 = self.plaza_coords[place]
@@ -208,9 +212,13 @@ class ParkingGUI:
         with open(DATABASE_FILE, 'w') as file:
             json.dump(cars, file, indent=4)
         
+        print(self.plaza_coords[place])
+        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'red')
         # Wait 2 seconds parked
         wait_time= 2
         time.sleep(wait_time)
+        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'green')
+
 
         # Exit coordenates
         exit_x1, exit_y1, exit_x2, exit_y2 = 900, 500, 1000, 600

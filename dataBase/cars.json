@@ -1,1 +1,52 @@
-[]
+[
+    {
+        "matr\u00edcula": "9337JIH",
+        "plaza": "P4",
+        "hora_aparcamiento": "2025-01-05 11:53:04"
+    },
+    {
+        "matr\u00edcula": "5398YJB",
+        "plaza": "P8",
+        "hora_aparcamiento": "2025-01-05 11:53:37"
+    },
+    {
+        "matr\u00edcula": "5067FSD",
+        "plaza": "P6",
+        "hora_aparcamiento": "2025-01-05 11:59:32"
+    },
+    {
+        "matr\u00edcula": "4608QRL",
+        "plaza": "P2",
+        "hora_aparcamiento": "2025-01-05 12:00:09"
+    },
+    {
+        "matr\u00edcula": "7601YUD",
+        "plaza": "P13",
+        "hora_aparcamiento": "2025-01-05 12:11:23"
+    },
+    {
+        "matr\u00edcula": "8912ZBL",
+        "plaza": "P10",
+        "hora_aparcamiento": "2025-01-05 12:11:46"
+    },
+    {
+        "matr\u00edcula": "7524LRK",
+        "plaza": "P1",
+        "hora_aparcamiento": "2025-01-05 12:13:42"
+    },
+    {
+        "matr\u00edcula": "0028JVC",
+        "plaza": "P3",
+        "hora_aparcamiento": "2025-01-05 12:13:55"
+    },
+    {
+        "matr\u00edcula": "6549RUS",
+        "plaza": "P14",
+        "hora_aparcamiento": null
+    },
+    {
+        "matr\u00edcula": "9881JWY",
+        "plaza": "P2",
+        "hora_aparcamiento": "2025-01-05 12:14:31"
+    }
+]
