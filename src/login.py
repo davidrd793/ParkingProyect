@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 import json
 from src import visualization
-from src import new
 import os
 
 # Ruta dinámica hacia dataBase/users.json
@@ -212,5 +211,4 @@ class LoginInterface:
     def show_visualization(self) -> None: #Redirige a la visualización de la app en sí
         for widget in self.root.winfo_children():
             widget.destroy()
-        root = tk.Tk()
-        visualization.ParkingGUI(root)
+        app = visualization.ParkingGUI(self.root)
