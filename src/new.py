@@ -13,8 +13,11 @@ matriculas = ['7601YUD', '9337JIH', '3560ANE', '8201QAL', '1487PRM', '3716KGV', 
  '8060ZHO', '4716QKX', '6802CPT', '2841NDY', '4608QRL', '7524LRK', '3955FTF', '7870FNH', '5067FSD', '4800OBO', 
  '7366YGC', '3041QQY', '3077LGS', '5398YJB', '8817EQY', '7860DWA', '6549RUS', '8912ZBL', '7689TBW', '6508USD']
 
-places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
+places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']	
 disabled_places = ['P1', 'P2', 'P3']
+non_disabled_places = ['P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
+disabled_cars = ['8817EQY', '2841NDY']
+
 
 # System classes
 class Place:
@@ -111,8 +114,7 @@ class ParkingGUI:
                                 text="Salida", font=("Arial", 12), fill="white")
     
     def generate_car(self):
-        plate = self.random_plate()
-        assigned_place = self.assign_place()
+        plate, assigned_place, comprobador = self.assign_place()
         print(f"Coche con matrícula {plate} ha entrado al parking, su plaza asignada es {assigned_place}")
         car = Vehicle(plate, assigned_place)
 
@@ -146,11 +148,27 @@ class ParkingGUI:
         return matricula
     
     def assign_place(self):
-        selected_place = random.choice(places)
-        places.remove(selected_place)
-        return selected_place
-    
-    def car_movement(self, car, place, plate):
+        plate = self.random_plate()
+        
+        if not places:
+            print("Parking lleno")
+            return None, None
+        
+        if plate in disabled_cars:
+            comprobador = True
+            selected_place = random.choice(disabled_places)
+            disabled_places.remove(selected_place)
+            places.remove(selected_place)
+            return plate, selected_place, comprobador
+        
+        else:
+            comprobador = False
+            selected_place = random.choice(non_disabled_places)
+            places.remove(selected_place)
+            non_disabled_places.remove(selected_place)
+            return plate, selected_place, comprobador
+
+    def car_movement(self, car, place, plate, comprobador=False):
         x1, y1, x2, y2 = self.plaza_coords[place]
         place_center_x = (x1 + x2) / 2
         place_center_y = (y1 + y2) / 2
@@ -269,6 +287,10 @@ class ParkingGUI:
 
         self.canvas.delete(car)
         places.append(place)
+        if comprobador:
+            disabled_places.append(place)
+        else:
+            non_disabled_places.append(place)
         matriculas.append(plate)
 
 
