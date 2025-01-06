@@ -226,12 +226,10 @@ class ParkingGUI:
         with open(DATABASE_FILE, 'w') as file:
             json.dump(cars, file, indent=4)
         
-        print(self.plaza_coords[place])
-        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'red')
+        
         # Wait 2 seconds parked
         wait_time= 2
         time.sleep(wait_time)
-        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'green')
 
 
         # Exit coordenates
