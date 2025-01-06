@@ -1,5 +1,6 @@
 Se trata de desarrollar un prototipo que permita visualizar un plano de una planta del aparcamiento, 
-con información sobre los vehículos aparcados y las plazas libres; y que permita visualizar el movimiento de los  vehículos (ya sea que se dirijan a una plaza libre o que abandonen el aparcamiento). 
+con información sobre los vehículos aparcados y las plazas libres;
+y que permita visualizar el movimiento de los  vehículos (ya sea que se dirijan a una plaza libre o que abandonen el aparcamiento). 
 La información de los vehículos deben incluir al menos su matrícula y la fecha (incluye la hora) en que aparcó,
 la plaza debe informar sobre su situación (libre, ocupada, reservada, ...) y el tamaño/tipo de vehículos que pueden aparcar en ella.
 Las vías de acceso a las plazas deben mostrar información sobre ocupación (si hay un vehículo desplazándose por ellas debe indicarse)
