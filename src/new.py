@@ -15,6 +15,7 @@ matriculas = ['7601YUD', '9337JIH', '3560ANE', '8201QAL', '1487PRM', '3716KGV', 
 
 places = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15']
 disabled_places = ['P1', 'P2', 'P3']
+id_rectangles = {}
 
 # System classes
 class Place:
@@ -93,7 +94,7 @@ class ParkingGUI:
         for i, plaza in enumerate(parking.places):
             color = "blue" if plaza.is_disabled else "green"
             self.plaza_coords[places[i]] = (x, y, x + width_plaza, y + height_plaza)
-            self.canvas.create_rectangle(x, y, x + width_plaza, y + height_plaza, fill=color, outline="white", width=4, tags=plaza.place_id)
+            id_rectangles[places[i]] = self.canvas.create_rectangle(x, y, x + width_plaza, y + height_plaza, fill=color, outline="white", width=4, tags=plaza.place_id)
             self.canvas.create_text(x + width_plaza / 2, y + height_plaza / 2, text=plaza.place_id, font=("Arial", 10), fill="white")
 
             x += width_plaza + horizontal_gap
@@ -212,12 +213,12 @@ class ParkingGUI:
         with open(DATABASE_FILE, 'w') as file:
             json.dump(cars, file, indent=4)
         
-        print(self.plaza_coords[place])
-        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'red')
+        self.change_parking_spot_color(self.canvas, id_rectangles[place], 'red')
+
         # Wait 2 seconds parked
         wait_time= 2
         time.sleep(wait_time)
-        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'green')
+        self.change_parking_spot_color(self.canvas, id_rectangles[place], 'green')
 
 
         # Exit coordenates
