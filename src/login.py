@@ -9,111 +9,101 @@ import os
 DATABASE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataBase", "users.json")
 
 
-# Clase Usuario
-class Usuario:
-    def __init__(self, nombre, email, contraseña, matricula, minusvalia):
-        self.nombre = nombre
+#Clase para definir usuario así como su traducción a formato json
+class User:
+    def __init__(self, name: str, email: str, password: str, plate: str, disability: bool) -> None:
+        self.name = name
         self.email = email
-        self.contraseña = contraseña
-        self.matricula = matricula
-        self.minusvalia = minusvalia
+        self.password = password
+        self.plate = plate
+        self.disability = disability
 
 
-    def to_dict(self):
-        """Convierte el objeto Usuario en un diccionario."""
+    def to_dict(self) -> dict: 
         return {
-            "nombre": self.nombre,
+            "name": self.name,
             "email": self.email,
-            "contraseña": self.contraseña,
-            "matricula": self.matricula,
-            "minusvalia": self.minusvalia
+            "password": self.password,
+            "plate": self.plate,
+            "disability": self.disability
         }
 
     @staticmethod
-    def from_dict(data):
-        """Crea un objeto Usuario a partir de un diccionario."""
-        return Usuario(
-            nombre=data["nombre"],
+    def from_dict(data: dict):
+        return User(
+            name=data["name"],
             email=data["email"],
-            contraseña=data["contraseña"],  # Ya cifrada
-            matricula=data["matricula"],
-            minusvalia=data["minusvalia"],
+            password=data["password"],
+            plate=data["plate"],
+            disability=data["disability"],
         )
 
 
-# Clase BaseDeDatos
-class BaseDeDatos:
-    def __init__(self, archivo):
-        self.archivo = archivo
-        self.usuarios = self.cargar_usuarios()
+class DataBase:
+    def __init__(self, file) -> None:
+        self.file = file
+        self.users = self.load_users()
 
-    def cargar_usuarios(self):
-        """Carga los usuarios desde el archivo JSON."""
+    def load_users(self) -> list:
         try:
-            with open(self.archivo, "r") as f:
-                datos = json.load(f)
-                return [Usuario.from_dict(u) for u in datos]
+            with open(self.file, "r") as f:
+                all_data = json.load(f)
+                return [User.from_dict(single_data) for single_data in all_data]
         except FileNotFoundError:
             return []
         except json.JSONDecodeError:
             return []
 
-    def guardar_usuarios(self):
-        """Guarda los usuarios en el archivo JSON."""
-        with open(self.archivo, "w") as f:
-            json.dump([u.to_dict() for u in self.usuarios], f, indent=4)
+    def save_users(self) -> None:
+        with open(self.file, "w") as f:
+            json.dump([single_data.to_dict() for single_data in self.users], f, indent=4)
 
-    def agregar_usuario(self, usuario):
-        """Agrega un usuario a la base de datos."""
-        self.usuarios.append(usuario)
-        self.guardar_usuarios()
+    def add_user(self, user) -> None:
+        self.users.append(user)
+        self.save_users()
 
-    def buscar_usuario(self, email):
-        """Busca un usuario por email."""
-        for usuario in self.usuarios:
-            if usuario.email == email:
-                return usuario
+    def search_user(self, email):
+        for user in self.users:
+            if user.email == email:
+                return user
         return None
 
 
-# Clase Autenticación
 class Autenticacion:
-    def __init__(self, db):
+    def __init__(self, db) -> None:
         self.db = db
 
-    def registrar_usuario(self, nombre, email, contraseña, matricula, minusvalia):
-        """Registra un nuevo usuario en el sistema."""
-        if self.db.buscar_usuario(email):
+    def user_registry(self, name: str, email: str, password: str, plate: str, disability: bool) -> tuple:
+        if self.db.search_user(email):
             return False, "El email ya está registrado."
 
-        nuevo_usuario = Usuario(nombre, email, contraseña, matricula, minusvalia)
-        self.db.agregar_usuario(nuevo_usuario)
+        new_user = User(name, email, password, plate, disability)
+        self.db.add_user(new_user)
         return True, "Usuario registrado exitosamente."
 
-    def iniciar_sesion(self, email, contraseña):
+    def log_in(self, email: str, password: str) -> tuple:
         """Inicia sesión verificando las credenciales."""
-        usuario = self.db.buscar_usuario(email)
-        if not usuario:
+        user = self.db.search_user(email)
+        if not user:
             return False, "Usuario no encontrado."
 
-        if usuario.contraseña == contraseña:
-            return True, f"Bienvenido, {usuario.nombre}."
+        if user.password == password:
+            return True, f"Bienvenido, {user.name}."
         else:
             return False, "Contraseña incorrecta."
 
 
 # Interfaz gráfica con Tkinter
 class LoginInterface:
-    def __init__(self, root):
+    def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.geometry("1000x1000")
         self.root.title("Sistema de Login")
-        self.db = BaseDeDatos(DATABASE_FILE)
+        self.db = DataBase(DATABASE_FILE)
         self.auth = Autenticacion(self.db)
-        self.mostrar_login()
+        self.show_login_screen()
 
-    def mostrar_login(self):
-        """Pantalla de inicio de sesión."""
+    def show_login_screen(self) -> None:
         for widget in self.root.winfo_children():
             widget.destroy()
 
@@ -125,30 +115,29 @@ class LoginInterface:
         password_entry = tk.Entry(self.root, show="*")
         password_entry.pack()
 
-        email_entry.bind("<Return>", lambda event: iniciar_sesion())
-        password_entry.bind("<Return>", lambda event: iniciar_sesion())
+        email_entry.bind("<Return>", lambda event: log_in())
+        password_entry.bind("<Return>", lambda event: log_in())
         
-        def iniciar_sesion():
+        def log_in() -> None:
             email = email_entry.get()
-            contraseña = password_entry.get()
-            exito, mensaje = self.auth.iniciar_sesion(email, contraseña)
-            messagebox.showinfo("Inicio de Sesión", mensaje)
-            if exito:
+            password = password_entry.get()
+            success, message = self.auth.log_in(email, password)
+            messagebox.showinfo("Inicio de Sesión", message)
+            if success:
                 self.show_visualization()
 
-        tk.Button(self.root, text="Iniciar Sesión", command=iniciar_sesion).pack(pady=10)
-        tk.Button(self.root, text="Registrarse", command=self.mostrar_registro).pack()
+        tk.Button(self.root, text="Iniciar Sesión", command=log_in).pack(pady=10)
+        tk.Button(self.root, text="Registrarse", command=self.sign_in_screen).pack()
 
-    def mostrar_registro(self):
-        """Pantalla de registro con validaciones."""
+    def sign_in_screen(self) -> None:
         for widget in self.root.winfo_children():
             widget.destroy()
 
         # Títulos y campos de entrada
-        tk.Label(self.root, text="Registro de Usuario", font=("Arial", 24)).pack(pady=10)
+        tk.Label(self.root, text="Registro de usuario", font=("Arial", 24)).pack(pady=10)
         tk.Label(self.root, text="Nombre:").pack()
-        nombre_entry = tk.Entry(self.root)
-        nombre_entry.pack()
+        name_entry = tk.Entry(self.root)
+        name_entry.pack()
         tk.Label(self.root, text="Email:").pack()
         email_entry = tk.Entry(self.root)
         email_entry.pack()
@@ -156,72 +145,71 @@ class LoginInterface:
         password_entry = tk.Entry(self.root, show="*")
         password_entry.pack()
         tk.Label(self.root, text="Matrícula:").pack()
-        matricula_entry = tk.Entry(self.root)
-        matricula_entry.pack()
+        plate_entry = tk.Entry(self.root)
+        plate_entry.pack()
 
         # Checkbutton para minusvalía
-        minusvalia_var = tk.BooleanVar()
-        tk.Label(self.root, text="¿Padece usted minusvalía?").pack()
+        disability_var = tk.BooleanVar()
+        tk.Label(self.root, text="¿Tiene usted alguna minusvalía?").pack()
 
-        def mostrar_mensaje_minusvalia():
-            if minusvalia_var.get():
-                messagebox.showinfo("IMPORTANTE", "Recuerde presentar su tarjeta de minusvalía en la entrada del parking.")
+        def show_disability_message() -> None:
+            if disability_var.get():
+                messagebox.showinfo("IMPORTANTE", "Como medida temporal, para autenticar tu minusvalía debes mandarle un correo a administrador@gmail.com con un documento que acredite tu minusvalía. En un futuro próximo se añadirán formas más directas de autenticar la minusvalía. Lamentamos las molestias")
 
         tk.Checkbutton(self.root, text="Si", 
-               variable=minusvalia_var, 
-               command=mostrar_mensaje_minusvalia).pack()
+               variable=disability_var, 
+               command=show_disability_message).pack()
         
         # Vincular tecla ENTER
-        nombre_entry.bind("<Return>", lambda event: registrar())
-        email_entry.bind("<Return>", lambda event: registrar())
-        password_entry.bind("<Return>", lambda event: registrar())
-        matricula_entry.bind("<Return>", lambda event: registrar())     
+        name_entry.bind("<Return>", lambda event: sign_in())
+        email_entry.bind("<Return>", lambda event: sign_in())
+        password_entry.bind("<Return>", lambda event: sign_in())
+        plate_entry.bind("<Return>", lambda event: sign_in())     
           
-        # Función para validar los datos
-        def validar_datos():
-            nombre = nombre_entry.get()
+        # Función para validar los all_data
+        def verify_data() -> bool:
+            name = name_entry.get()
             email = email_entry.get()
-            contraseña = password_entry.get()
-            matricula = matricula_entry.get()
-            minusvalia = minusvalia_var.get()
+            password = password_entry.get()
+            plate = plate_entry.get()
+            disability = disability_var.get()
             # Validaciones
-            if not nombre.isalpha():
+            if not name.isalpha():
                 messagebox.showerror("Error", "El nombre solo debe contener letras.")
                 return False
             if not ("@" in email and "." in email.split("@")[-1]):
                 messagebox.showerror("Error", "El email no tiene un formato válido.")
                 return False
-            if len(contraseña) < 9:
+            if len(password) < 9:
                 messagebox.showerror("Error", "La contraseña debe tener al menos 9 caracteres.")
                 return False
-            if not (len(matricula) == 7 and matricula[:4].isdigit() and matricula[4:].isalpha()):
+            if not (len(plate) == 7 and plate[:4].isdigit() and plate[4:].isalpha()):
                 messagebox.showerror("Error", "La matrícula debe ser de 4 números seguidos de 3 letras.")
                 return False
 
             return True
 
         # Función de registro con validación
-        def registrar():
-            if validar_datos():
-                nombre = nombre_entry.get()
+        def sign_in() -> None:
+            if verify_data():
+                name = name_entry.get()
                 email = email_entry.get()
-                contraseña = password_entry.get()
-                matricula = matricula_entry.get()
-                minusvalia = minusvalia_var.get()
-                exito, mensaje = self.auth.registrar_usuario(
-                    nombre, email, contraseña, matricula, minusvalia
+                password = password_entry.get()
+                plate = plate_entry.get()
+                disability = disability_var.get()
+                success, message = self.auth.user_registry(
+                    name, email, password, plate, disability
                 )
-                messagebox.showinfo("Registro", mensaje)
-                if exito:
-                    self.mostrar_login()
+                messagebox.showinfo("Registro", message)
+                if success:
+                    self.show_login_screen()
 
         # Botones
-        tk.Button(self.root, text="Registrar", command=registrar).pack(pady=10)
-        tk.Button(self.root, text="Volver", command=self.mostrar_login).pack()
+        tk.Button(self.root, text="Registrar", command=sign_in).pack(pady=10)
+        tk.Button(self.root, text="Volver", command=self.show_login_screen).pack()
 
 
-    def show_visualization(self):
-        """Pantalla de bienvenida tras iniciar sesión."""
+    def show_visualization(self) -> None: #Redirige a la visualización de la app en sí
         for widget in self.root.winfo_children():
             widget.destroy()
         root = tk.Tk()

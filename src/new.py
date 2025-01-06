@@ -69,13 +69,13 @@ class ParkingGUI:
         self.root.maxsize(width=1200, height=750)
         self.root.minsize(width=1200, height=750) 
 
-        # Crear un canvas para el parking
+        # Contenedor para la visualización
         self.canvas = tk.Canvas(self.root, width=1000, height=600, bg="gray")
         self.canvas.grid(column=0, row=0, padx=100)
+
+        #Contenedor para el botón
         self.button_container = tk.Frame(self.root, width=1000, height=100)
         self.button_container.grid(column=0, row=1, pady=25)
-
-        #Command del boton 1 llama a la función que añade un coche al parking
         self.add_car_button = tk.Button(self.button_container, text='Add Car', command=self.generate_car).grid(column=0, row=0, padx=(200, 100), pady=(20, 20)) 
 
 
@@ -226,9 +226,13 @@ class ParkingGUI:
         with open(DATABASE_FILE, 'w') as file:
             json.dump(cars, file, indent=4)
         
+        print(self.plaza_coords[place])
+        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'red')
         # Wait 2 seconds parked
         wait_time= 2
         time.sleep(wait_time)
+        self.change_parking_spot_color(self.canvas, self.plaza_coords[place], 'green')
+
 
         # Exit coordenates
         exit_x1, exit_y1, exit_x2, exit_y2 = 900, 500, 1000, 600
