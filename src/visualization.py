@@ -236,8 +236,11 @@ class ParkingGUI:
         # Wait 2 seconds parked
         wait_time= 2
         time.sleep(wait_time)
-        self.change_color(place, color='green')
-
+        print(place)
+        if place in disabled_places:
+            self.change_color(place, color='blue')
+        else:
+            self.change_color(place, color='green')
 
         # Exit coordenates
         exit_x1, exit_y1, exit_x2, exit_y2 = 900, 500, 1000, 600
